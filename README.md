@@ -1,45 +1,56 @@
+<p align="center">
+  <img src="public/nookr-wordmark.png" alt="Nookr" width="420">
+</p>
+
 # Nookr Lot Mapper
 
-A mobile-friendly lot mapping tool for field surveying and HOA lot management.
+**A phone-friendly map for walking a subdivision and recording every lot — boundaries, numbers, owners — even with no signal.**
 
-## ✨ Features
+Surveying lots for an HOA usually means a printed map, a pen, and a spreadsheet typed up later. Nookr Lot Mapper puts that on your phone: open the satellite view, tap a lot to auto-trace its boundary (or draw it by hand), and fill in the lot number, block, owner and notes on the spot.
 
-### Core Mapping
-- **Interactive Map** - Satellite, street, and dark mode tiles
-- **Smart Lot Selection** - Click to auto-detect lot boundaries using edge detection
-- **Manual Drawing** - Draw polygons with vertex snapping to edges
-- **Lot Details** - Store lot number, block, owner, and notes
+It is built for the field. Map tiles can be downloaded ahead of time so the map still works where there is no data, GPS shows where you are standing and which way you are facing, and everything you record saves on the device automatically. When you are done, export the lots as JSON or GeoJSON, or share a link straight to one lot.
 
-### Mobile Features
-- **GPS Location** (📍) - Show your position with real-time compass heading
-- **Distance Ruler** - See distance and bearing to selected lot
-- **Quick Actions FAB** - Floating button for quick access to Draw, Edge Detect, GPS, Undo
-- **Lot Search** - Find lots by number, owner, or notes
-- **Share Link** - Copy URL to share lot location
+## What you can do
 
-### Data Management
-- **Offline Support** - Download map tiles for offline use
-- **Auto-Save** - Lots saved to IndexedDB automatically
-- **Export** - JSON and GeoJSON formats
-- **Import** - Load previously saved data
-- **Undo/Redo** - Full action history (Ctrl+Z / Ctrl+Shift+Z)
+- **Map** — satellite, street and dark tiles; tap a lot to detect its edges, or draw a polygon that snaps to them.
+- **Record** — lot number, block, owner and notes per lot; search by any of them.
+- **Work in the field** — GPS position with compass heading, distance and bearing to the selected lot, a quick-action button for draw / detect / GPS / undo.
+- **Work offline** — installable as an app (PWA); download tiles for the area you will survey.
+- **Keep your data** — auto-saved to the browser (IndexedDB), undo/redo, import, and export to JSON or GeoJSON.
+- **Share** — copy a link that opens the map on a specific lot.
 
-## 🚀 Getting Started
+## Quick start
 
 ```bash
 npm install
-npm run dev
+npm run dev        # Vite dev server
+npm run build      # production build
+npm run preview    # serve the build
 ```
 
-## 📱 Mobile Usage
+On a phone: open the app, tap 📍 for your location, tap ✨ for quick actions, and use 🔗 in a lot's details to share it.
 
-1. **Open the app** on your phone
-2. **Tap GPS button** (📍) to see your location
-3. **Tap the ✨ FAB** for quick actions
-4. **Search lots** using the search box
-5. **Share lots** using the 🔗 button in lot details
+### Optional: sync server
 
-## ⌨️ Keyboard Shortcuts
+The app works fully on its own. To sync lots to a database, run Postgres and the small API in `server/`:
+
+```bash
+docker compose up -d          # Postgres 16, schema loaded from src/db/schema.sql
+cd server && npm install && npm start   # API on http://localhost:3001/api
+```
+
+## Configuration
+
+Only the sync server reads environment variables; each has a local-dev default.
+
+- `PORT` — API port (default 3001)
+- `PGHOST` — Postgres host
+- `PGPORT` — Postgres port
+- `PGUSER` — Postgres user
+- `PGPASSWORD` — Postgres password
+- `PGDATABASE` — Postgres database name
+
+## Keyboard shortcuts
 
 | Shortcut | Action |
 |----------|--------|
@@ -47,6 +58,22 @@ npm run dev
 | `Ctrl+Shift+Z` / `Ctrl+Y` | Redo |
 | While drawing: `Ctrl+Z` | Remove last vertex |
 
-## 📄 License
+## How it works
+
+```
+Leaflet map (src/map) ──▶ lot tools (src/lots) ──▶ IndexedDB (src/db)
+        │                                              │
+   tile cache ── offline                     optional sync ──▶ server/ (Express) ──▶ Postgres
+```
+
+The repo also holds an earlier Chrome extension version (`manifest.json`, `content/`, `popup/`) that draws lots directly on Google Maps.
+
+## Docs
+
+- [docs/README.md](docs/README.md) — documentation index
+- [Getting started](docs/getting-started.md) · [Features](docs/features.md) · [Offline guide](docs/offline-guide.md)
+- [Share code format](docs/SHARE_CODE.md) · [Architecture](docs/architecture.md) · [API reference](docs/api-reference.md)
+
+## License
 
 MIT
